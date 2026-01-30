@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package godev.bluffpointtech.com.i18nextservice.proto.resources.v1;
+
+option go_package = "godev.bluffpointtech.com/i18nextservice/proto/resources/v1";
+
+import "google/api/httpbody.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+message ProblemDetail { //error_response
+  string type=1; //uri error_uri
+  string title=2; 
+  string detail=3; //error_description
+  uint32 status=4; // status code
+  string instance=5; //uri or tag
+  string i18n=6; //localizedMessage
+  repeated ErrorDetail errorDetails=7; //metadata
+}
+
+message ErrorDetail {
+  string detail=1;
+  string param=2;
+  string i18n=3;
+}
+
+// Request for GET /v1/resources/{application}/{component}/{page}
+message GetResourceRequest {
+  string application = 1;
+  string component = 2;
+  string page = 3;
+}
+
+// Request for POST /v1/resources:retrieve
+message GetResourceByUUIDRequest {
+  string uuid = 1;
+}
+
+service ResourcesAPI {
+  // GET i18next resource by application/component/page
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      get: "/v1/resources/{application}/{component}/{page}"
+    };
+  }
+
+  // POST to retrieve resource by UUID in request body
+  rpc GetResourceByUUID(GetResourceByUUIDRequest) returns (PageResourceDetails) {
+    option (google.api.http) = {
+      post: "/v1/resources:retrieve"
+      body: "*"
+    };
+  }
+
+  // Search resources by tag
+  rpc SearchByTag(SearchByTagRequest) returns (SearchResults) {
+    option (google.api.http) = {
+      get: "/v1/resources:searchByTag"
+    };
+  }
+
+  // Search resources by text across all resources
+  rpc SearchByText(SearchByTextRequest) returns (SearchResults) {
+    option (google.api.http) = {
+      get: "/v1/resources:searchByText"
+    };
+  }
+
+  // Create a new resource file
+  rpc CreatePageResource(CreateResourceRequest) returns (PageResourceDetails) {
+    option (google.api.http) = {
+      post: "/v1/resources"
+      body: "*"
+    };
+  }
+
+  // Update an existing resource file by UUID
+  rpc UpdatePageResource(UpdateResourceRequest) returns (PageResourceDetails) {
+    option (google.api.http) = {
+      put: "/v1/resources/{uuid}"
+      body: "*"
+    };
+  }
+
+  // Delete a resource file by UUID
+  rpc DeletePageResource(DeleteResourceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/resources/{uuid}"
+    };
+  }
+
+}
+
+// Response representing an i18next resource file with metadata
+message PageResourceDetails {
+  // The UUID identifying the resource file
+  string uuid = 1;
+  // The i18next JSON object; supports nested structures
+  google.protobuf.Struct resource = 2;
+  // Metadata
+  string creationUID = 3;
+  google.protobuf.Timestamp creationTimeStamp = 4;
+  string revisionUID = 5;
+  google.protobuf.Timestamp revisionTimeStamp = 6;
+  repeated string tags = 7;
+}
+
+// Request for tag-based search
+message SearchByTagRequest {
+  string tag = 1;
+}
+
+// Request for full-text-like search across resources
+message SearchByTextRequest {
+  string text = 1;
+}
+
+// Search results
+message SearchResults {
+  repeated PageResourceDetails items = 1;
+}
+
+// Request to create a resource file
+message CreateResourceRequest {
+  // Resource identity
+  string application = 1;
+  string component = 2;
+  string page = 3;
+  // Content
+  google.protobuf.Struct resource = 4;
+  // Metadata (optional)
+  string creationUID = 5;
+  repeated string tags = 6;
+}
+
+// Request to update a resource file by UUID
+message UpdateResourceRequest {
+  string uuid = 1;
+  // Content updates
+  google.protobuf.Struct resource = 2;
+  // Optional metadata updates
+  string revisionUID = 3;
+  repeated string tags = 4;
+}
+
+// Request to delete a resource file by UUID
+message DeleteResourceRequest {
+  string uuid = 1;
+}
+

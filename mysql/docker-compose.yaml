@@ -1,0 +1,27 @@
+version: "3.2"
+services:
+  mysqlmaster:
+    build:
+      context: './'
+      args:
+       MYSQL_VERSION: ${MYSQL_VERSION}
+    image: bluffpointtech.com/bptmysql:1.0.0
+    restart: always
+    ports:
+      - "7856:3306"
+    volumes:
+      - mysqlbptmaster:/var/lib/mysql
+    networks:
+      - bptmysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    container_name: mysqlmaster
+
+volumes:
+  mysqlbptmaster:
+networks:
+  bptmysql: 
+      

@@ -1,0 +1,48 @@
+version: "3.2"
+services:
+  bpti18next:
+    image: bluffpointtech.com/bpti18next:1.0.0
+    networks:
+      - mysqlinext
+    ports:
+      - "8194:8080"
+      - "8195:8081"
+      - "9194:9080"
+      - "9195:9081"
+    volumes:
+      - ./googleconfig/:/opt/google/
+      - ./tlsconfig/:/opt/certs/
+    environment:
+      GRPC_TLS_SERVER_PORT: "9081"
+      GIN_SERVER_PORT: "8080"
+      GIN_TLS_SERVER_PORT: "9080"
+      HTTP_CLIENT_MAX_IDLE_CON: "10"
+      HTTP_CLIENT_IDLE_CON_TIMEOUT: "30"
+      HTTP_CLIENT_DISABLE_COMP: "false"
+      TLS_CERT_FILE: "/opt/certs/server.crt"
+      TLS_KEY_FILE: "/opt/certs/server.key"
+      SERVER_NAME: "bpti18next"
+      ALLOWED_ORIGIN_HEADER: "http://localhost:9194 http://localhost:8194"
+
+  mysqlmasterinext:
+    image: bluffpointtech.com/bptmysql:1.0.0
+    restart: always
+    ports:
+      - "7856:3306"
+    volumes:
+      - mysqlinextvol1:/var/lib/mysql
+    networks:
+      - mysqlinext
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    container_name: mysqlmasterinext
+
+volumes:
+  mysqlinextvol1:
+networks:
+  mysqlinext: 
+
+  
