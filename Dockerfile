@@ -1,5 +1,8 @@
 FROM golang:1.25rc1-alpine3.22
 
+ARG VERSION
+LABEL com.bluffpointtech.bpti18next.version="${VERSION}"
+
 RUN mkdir /app
 RUN mkdir /app/proto
 RUN mkdir /app/resourcelocalization

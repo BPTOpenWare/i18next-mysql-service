@@ -1,5 +1,7 @@
-# i18next MySQL Service
 
+# i18next MySQL Service 
+
+Initial development in progress, do not use!
 This service exposes a gRPC API with a gRPC-Gateway REST interface for storing and retrieving i18next resource files. The API is defined in [proto/resources/resources.proto](proto/resources/resources.proto) under the `ResourcesAPI` service.
 
 ## Overview

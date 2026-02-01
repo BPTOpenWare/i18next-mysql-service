@@ -1,7 +1,7 @@
 version: "3.2"
 services:
   bpti18next:
-    image: bluffpointtech.com/bpti18next:1.0.0
+    image: bluffpointtech.com/bpti18next:${VERSION}
     networks:
       - mysqlinext
     ports:
